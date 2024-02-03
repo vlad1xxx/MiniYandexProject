@@ -36,7 +36,7 @@ class MapApp(QMainWindow):
                 self.search_btn.setIcon(QIcon('images/image2.png'))
                 self.input_line.setDisabled(True)
         else:
-            self.pt = False  #
+            self.pt = False
             self.input_line.clear()  # очистка поля ввода
             self.update_map()  # отображаю карту без метки
             self.is_search = True
@@ -83,6 +83,7 @@ class MapApp(QMainWindow):
 
     # следит за нажатыми кнопками, нажата стрелка вверх - карта двинется наверх и тд
     def keyPressEvent(self, event):
+        print(event.key())
         if event.key() == Qt.Key_Left:
             if self.lon - self.delta < -179:
                 self.lon = -179
