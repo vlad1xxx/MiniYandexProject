@@ -25,7 +25,9 @@ class MapApp(QMainWindow):
             "size": '650,450'
         }
         response = requests.get(req_url, params=params)
-        return response.content
+        if response.status_code == 200:
+            return response.content
+        print(f'Ошибка {response.status_code}')
 
     def update_map(self):
         pixmap = QPixmap()
