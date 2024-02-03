@@ -15,6 +15,7 @@ class MapApp(QMainWindow):
         self.delta = 0.01
         self.view = "map"
         self.pt = True  # отвечает за ставить метку или нет
+        self.is_search = True
         uic.loadUi("main.ui", self)
         self.setWindowTitle("Yandex Map")
         self.initUI()
@@ -22,20 +23,25 @@ class MapApp(QMainWindow):
     # присоединяем кнопки к функциям
     def initUI(self):
         self.search_btn.setIcon(QIcon('images/image.png'))
-        self.cancel_btn.setIcon(QIcon('images/image2.png'))
         self.search_btn.clicked.connect(self.search)
-        self.cancel_btn.clicked.connect(self.clear)
 
     # идет поиск по карте
     def search(self):
-        text = self.input_line.text()  # беру текст
-        self.lon, self.lat = self.get_toponym_coords(text)  # ищем топоним и получаем координаты
-        self.update_map()
-
-    def clear(self):
-        self.pt = False  #
-        self.input_line.clear()  # очистка поля ввода
-        self.update_map()  # отображаю карту без метки
+        if self.is_search:
+            text = self.input_line.text()  # беру текст
+            if text:
+                self.lon, self.lat = self.get_toponym_coords(text)  # ищем топоним и получаем координаты
+                self.update_map()
+                self.is_search = False
+                self.search_btn.setIcon(QIcon('images/image2.png'))
+                self.input_line.setDisabled(True)
+        else:
+            self.pt = False  #
+            self.input_line.clear()  # очистка поля ввода
+            self.update_map()  # отображаю карту без метки
+            self.is_search = True
+            self.search_btn.setIcon(QIcon('images/image.png'))
+            self.input_line.setDisabled(False)
 
     # получение координат топонима
     def get_toponym_coords(self, toponym_name):
