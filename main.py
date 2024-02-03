@@ -3,7 +3,7 @@ import sys
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 import requests
 
 
@@ -21,6 +21,8 @@ class MapApp(QMainWindow):
 
     # присоединяем кнопки к функциям
     def initUI(self):
+        self.search_btn.setIcon(QIcon('images/image.png'))
+        self.cancel_btn.setIcon(QIcon('images/image2.png'))
         self.search_btn.clicked.connect(self.search)
         self.cancel_btn.clicked.connect(self.clear)
 
