@@ -35,6 +35,7 @@ class MapApp(QMainWindow):
                 self.is_search = False
                 self.search_btn.setIcon(QIcon('images/image2.png'))
                 self.input_line.setDisabled(True)
+                self.setFocus()
         else:
             self.pt = False
             self.input_line.clear()  # очистка поля ввода
@@ -42,6 +43,7 @@ class MapApp(QMainWindow):
             self.is_search = True
             self.search_btn.setIcon(QIcon('images/image.png'))
             self.input_line.setDisabled(False)
+
 
     # получение координат топонима
     def get_toponym_coords(self, toponym_name):
