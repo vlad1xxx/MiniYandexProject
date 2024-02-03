@@ -14,25 +14,28 @@ class MapApp(QMainWindow):
         self.lat = None
         self.delta = 0.01
         self.view = "map"
-        self.pt = True
+        self.pt = True  # отвечает за ставить метку или нет
         uic.loadUi("main.ui", self)
         self.setWindowTitle("Yandex Map")
         self.initUI()
 
+    # присоединяем кнопки к функциям
     def initUI(self):
         self.search_btn.clicked.connect(self.search)
         self.cancel_btn.clicked.connect(self.clear)
 
+    # идет поиск по карте
     def search(self):
-        text = self.input_line.text()
-        self.lon, self.lat = self.get_toponym_coords(text)
+        text = self.input_line.text()  # беру текст
+        self.lon, self.lat = self.get_toponym_coords(text)  # ищем топоним и получаем координаты
         self.update_map()
 
     def clear(self):
-        self.pt = False
-        self.input_line.clear()
-        self.update_map()
+        self.pt = False  #
+        self.input_line.clear()  # очистка поля ввода
+        self.update_map()  # отображаю карту без метки
 
+    # получение координат топонима
     def get_toponym_coords(self, toponym_name):
         req_url = "http://geocode-maps.yandex.ru/1.x/"
         params = {
@@ -47,6 +50,7 @@ class MapApp(QMainWindow):
         toponym_coords = toponym["Point"]["pos"]
         return list(map(float, toponym_coords.split(" ")))
 
+    # получение изображения карты
     def get_image(self):
         req_url = f"http://static-maps.yandex.ru/1.x/"
         params = {
@@ -55,7 +59,7 @@ class MapApp(QMainWindow):
             "l": self.view,
             "size": '650,450',
         }
-        if self.pt:
+        if self.pt:  # если True то карта будет с меткой
             params['pt'] = ",".join((str(self.lon), str(self.lat), 'pm2rdm'))
         response = requests.get(req_url, params=params)
         self.pt = True
@@ -63,11 +67,13 @@ class MapApp(QMainWindow):
             return response.content
         print(f'Ошибка {response.status_code}')
 
+    # отображает карту
     def update_map(self):
         pixmap = QPixmap()
         pixmap.loadFromData(self.get_image())
         self.image.setPixmap(pixmap)
 
+    # следит за нажатыми кнопками, нажата стрелка вверх - карта двинется наверх и тд
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Left:
             if self.lon - self.delta < -179:
