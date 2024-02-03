@@ -99,6 +99,12 @@ class MapApp(QMainWindow):
             else:
                 self.lat -= self.delta
             self.update_map()
+        elif event.key() == Qt.Key_PageUp:
+            self.delta += 0.01
+            self.update_map()
+        elif event.key() == Qt.Key_PageDown:
+            self.delta -= 0.01
+            self.update_map()
 
 
 if __name__ == "__main__":
@@ -106,4 +112,3 @@ if __name__ == "__main__":
     ex = MapApp()
     ex.show()
     sys.exit(app.exec_())
-    # 55.702647, 37.530834
