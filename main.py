@@ -75,7 +75,7 @@ class MapApp(QMainWindow):
             "size": '650,450'
         }
         if self.pt:  # если True то карта будет с меткой
-            params['pt'] = ",".join(self.point)
+            params['pt'] = ",".join((str(self.lon), str(self.lat), 'pm2rdm'))
         response = requests.get(req_url, params=params)
         self.pt = True
         if response.status_code == 200:
@@ -144,3 +144,4 @@ if __name__ == "__main__":
     ex = MapApp()
     ex.show()
     sys.exit(app.exec_())
+
