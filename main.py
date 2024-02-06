@@ -13,7 +13,8 @@ class MapApp(QMainWindow):
         self.lon = None
         self.lat = None
         self.delta = 0.02
-        self.view = ''
+        self.view = 'map'
+        self.point = tuple()
         self.pt = True  # отвечает за ставить метку или нет
         self.is_search = True
         uic.loadUi("main.ui", self)
@@ -35,6 +36,7 @@ class MapApp(QMainWindow):
             text = self.input_line.text()  # беру текст
             if text:
                 self.lon, self.lat = self.get_toponym_coords(text)  # ищем топоним и получаем координаты
+                self.point = (str(self.lon), str(self.lat), 'pm2rdm')
                 self.update_map()
                 self.is_search = False
                 self.search_btn.setIcon(QIcon('images/image2.png'))
@@ -73,7 +75,7 @@ class MapApp(QMainWindow):
             "size": '650,450'
         }
         if self.pt:  # если True то карта будет с меткой
-            params['pt'] = ",".join((str(self.lon), str(self.lat), 'pm2rdm'))
+            params['pt'] = ",".join(self.point)
         response = requests.get(req_url, params=params)
         self.pt = True
         if response.status_code == 200:
