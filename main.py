@@ -24,7 +24,7 @@ class MapApp(QMainWindow):
     def initUI(self):
         self.search_btn.setIcon(QIcon('images/image.png'))
         self.search_btn.clicked.connect(self.search)
-        #кнопки смены режима карты
+        # кнопки смены режима карты
         self.scheme.clicked.connect(self.make_map)
         self.satellite.clicked.connect(self.make_satellite)
         self.hybrid.clicked.connect(self.make_hybrid)
@@ -47,7 +47,6 @@ class MapApp(QMainWindow):
             self.is_search = True
             self.search_btn.setIcon(QIcon('images/image.png'))
             self.input_line.setDisabled(False)
-
 
     # получение координат топонима
     def get_toponym_coords(self, toponym_name):
@@ -87,20 +86,23 @@ class MapApp(QMainWindow):
         pixmap.loadFromData(self.get_image())
         self.image.setPixmap(pixmap)
 
-    #режим 'гибрид'
+    # режим 'гибрид'
     def make_hybrid(self):
         self.view = 'skl'
         self.update_map()
+        self.setFocus()
 
-    #режим 'схема'
+    # режим 'схема'
     def make_map(self):
         self.view = 'map'
         self.update_map()
+        self.setFocus()
 
-    #режим 'спутник'
+    # режим 'спутник'
     def make_satellite(self):
         self.view = 'sat'
         self.update_map()
+        self.setFocus()
 
     # следит за нажатыми кнопками, нажата стрелка вверх - карта двинется наверх и тд
     def keyPressEvent(self, event):
@@ -125,7 +127,7 @@ class MapApp(QMainWindow):
                 self.lat = -85.0
             else:
                 self.lat -= self.delta
-        #изменение масштаба
+        # изменение масштаба
         elif event.key() == Qt.Key_PageUp:
             if self.delta > 0.001:
                 self.delta /= 2.4
@@ -140,4 +142,3 @@ if __name__ == "__main__":
     ex = MapApp()
     ex.show()
     sys.exit(app.exec_())
-
