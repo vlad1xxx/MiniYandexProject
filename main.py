@@ -13,7 +13,7 @@ class MapApp(QMainWindow):
         self.lon = None
         self.lat = None
         self.delta = 0.02
-        self.view = ''
+        self.view = 'map'
         self.pt = True  # отвечает за ставить метку или нет
         self.is_search = True
         uic.loadUi("main.ui", self)
@@ -47,7 +47,6 @@ class MapApp(QMainWindow):
             self.is_search = True
             self.search_btn.setIcon(QIcon('images/image.png'))
             self.input_line.setDisabled(False)
-
 
     # получение координат топонима
     def get_toponym_coords(self, toponym_name):
@@ -91,16 +90,19 @@ class MapApp(QMainWindow):
     def make_hybrid(self):
         self.view = 'skl'
         self.update_map()
+        self.setFocus()
 
     #режим 'схема'
     def make_map(self):
         self.view = 'map'
         self.update_map()
+        self.setFocus()
 
     #режим 'спутник'
     def make_satellite(self):
         self.view = 'sat'
         self.update_map()
+        self.setFocus()
 
     # следит за нажатыми кнопками, нажата стрелка вверх - карта двинется наверх и тд
     def keyPressEvent(self, event):
