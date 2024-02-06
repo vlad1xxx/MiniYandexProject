@@ -12,8 +12,8 @@ class MapApp(QMainWindow):
         super().__init__()
         self.lon = None
         self.lat = None
-        self.delta = 0.01
-        self.view = "map"
+        self.delta = 0.02
+        self.view = ''
         self.pt = True  # отвечает за ставить метку или нет
         self.is_search = True
         uic.loadUi("main.ui", self)
@@ -24,6 +24,10 @@ class MapApp(QMainWindow):
     def initUI(self):
         self.search_btn.setIcon(QIcon('images/image.png'))
         self.search_btn.clicked.connect(self.search)
+        #кнопки смены режима карты
+        self.scheme.clicked.connect(self.make_map)
+        self.satellite.clicked.connect(self.make_satellite)
+        self.hybrid.clicked.connect(self.make_hybrid)
 
     # идет поиск по карте
     def search(self):
@@ -65,7 +69,7 @@ class MapApp(QMainWindow):
             "ll": ",".join((str(self.lon), str(self.lat))),
             "spn": ",".join((str(self.delta), str(self.delta))),
             "l": self.view,
-            "size": '650,450',
+            "size": '650,450'
         }
         if self.pt:  # если True то карта будет с меткой
             params['pt'] = ",".join((str(self.lon), str(self.lat), 'pm2rdm'))
@@ -81,6 +85,21 @@ class MapApp(QMainWindow):
         pixmap.loadFromData(self.get_image())
         self.image.setPixmap(pixmap)
 
+    #режим 'гибрид'
+    def make_hybrid(self):
+        self.view = 'skl'
+        self.update_map()
+
+    #режим 'схема'
+    def make_map(self):
+        self.view = 'map'
+        self.update_map()
+
+    #режим 'спутник'
+    def make_satellite(self):
+        self.view = 'sat'
+        self.update_map()
+
     # следит за нажатыми кнопками, нажата стрелка вверх - карта двинется наверх и тд
     def keyPressEvent(self, event):
         print(event.key())
@@ -89,31 +108,29 @@ class MapApp(QMainWindow):
                 self.lon = -179
             else:
                 self.lon -= self.delta
-            self.update_map()
         elif event.key() == Qt.Key_Right:
             if self.lon - self.delta > 179:
                 self.lon = 179
             else:
                 self.lon += self.delta
-            self.update_map()
         elif event.key() == Qt.Key_Up:
             if self.lat + self.delta > 85:
                 self.lat = 85.0
             else:
                 self.lat += self.delta
-            self.update_map()
         elif event.key() == Qt.Key_Down:
             if self.lat - self.delta < -85:
                 self.lat = -85.0
             else:
                 self.lat -= self.delta
-            self.update_map()
+        #изменение масштаба
         elif event.key() == Qt.Key_PageUp:
-            self.delta += 0.01
-            self.update_map()
+            if self.delta > 0.001:
+                self.delta /= 2.4
         elif event.key() == Qt.Key_PageDown:
-            self.delta -= 0.01
-            self.update_map()
+            if self.delta < 50:
+                self.delta *= 2.4
+        self.update_map()
 
 
 if __name__ == "__main__":
