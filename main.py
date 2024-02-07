@@ -15,6 +15,7 @@ class MapApp(QMainWindow):
         self.delta = 0.02
         self.view = 'map'
         self.point = tuple()
+        self.address = ''
         self.pt = True  # отвечает за ставить метку или нет
         self.is_search = True
         uic.loadUi("main.ui", self)
@@ -63,6 +64,8 @@ class MapApp(QMainWindow):
         toponym = json_response["response"]["GeoObjectCollection"] \
             ["featureMember"][0]["GeoObject"]
         toponym_coords = toponym["Point"]["pos"]
+        self.address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
+        self.print_address(self.address)
         return list(map(float, toponym_coords.split(" ")))
 
     # получение изображения карты
@@ -81,6 +84,12 @@ class MapApp(QMainWindow):
         if response.status_code == 200:
             return response.content
         print(f'Ошибка {response.status_code}')
+
+    # отображает адрес
+    def print_address(self, ad):
+        self.address_label.setText(ad)
+        # выравнивание текста
+        self.address_label.setWordWrap(True)
 
     # отображает карту
     def update_map(self):
