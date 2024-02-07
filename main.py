@@ -19,10 +19,13 @@ class MapApp(QMainWindow):
         self.is_search = True
         uic.loadUi("main.ui", self)
         self.setWindowTitle("Yandex Map")
+        self.image.mousePressEvent = self.click_on_map
         self.initUI()
 
     # присоединяем кнопки к функциям
     def initUI(self):
+        # self.image.resize(450, 450)
+
         self.search_btn.setIcon(QIcon('images/image.png'))
         self.search_btn.clicked.connect(self.search)
         # кнопки смены режима карты
@@ -82,6 +85,15 @@ class MapApp(QMainWindow):
             return response.content
         print(f'Ошибка {response.status_code}')
 
+    def search_toponym(self, lon, lat):
+        params = {
+            "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+            "geocode": ','.join((str(lon), str(lat))),
+            "format": "json"
+        }
+        response = requests.get(f'https://geocode-maps.yandex.ru/1.x/', params=params)
+        return response.json()
+
     # отображает карту
     def update_map(self):
         pixmap = QPixmap()
@@ -106,6 +118,14 @@ class MapApp(QMainWindow):
         self.update_map()
         self.setFocus()
 
+    def click_on_map(self, event):
+        pos = event.pos()
+        lon, lat = self.find_new_lonlat(pos.x(), pos.y())
+        # обновляем координаты метки
+        self.point = (str(lon), str(lat), 'pm2rdm')
+        self.update_map()
+        print(self.search_toponym(lon, lat))
+
     # следит за нажатыми кнопками, нажата стрелка вверх - карта двинется наверх и тд
     def keyPressEvent(self, event):
         print(event.key())
@@ -114,29 +134,41 @@ class MapApp(QMainWindow):
                 self.lon = -179
             else:
                 self.lon -= self.delta
+            self.update_map()
         elif event.key() == Qt.Key_Right:
             if self.lon - self.delta > 179:
                 self.lon = 179
             else:
                 self.lon += self.delta
+            self.update_map()
         elif event.key() == Qt.Key_Up:
             if self.lat + self.delta > 85:
                 self.lat = 85.0
             else:
                 self.lat += self.delta
+            self.update_map()
         elif event.key() == Qt.Key_Down:
             if self.lat - self.delta < -85:
                 self.lat = -85.0
             else:
                 self.lat -= self.delta
+            self.update_map()
         # изменение масштаба
         elif event.key() == Qt.Key_PageUp:
             if self.delta > 0.001:
                 self.delta /= 2.4
+                self.update_map()
         elif event.key() == Qt.Key_PageDown:
             if self.delta < 50:
                 self.delta *= 2.4
-        self.update_map()
+                self.update_map()
+
+    def find_new_lonlat(self, x, y):
+        center_x = 325
+        center_y = 225
+        lon = self.lon + (x - center_x) * (self.delta * 2 / 450)
+        lat = self.lat - (y - center_y) * (self.delta * 2 / 650)
+        return lon, lat
 
 
 if __name__ == "__main__":
@@ -144,4 +176,3 @@ if __name__ == "__main__":
     ex = MapApp()
     ex.show()
     sys.exit(app.exec_())
-
