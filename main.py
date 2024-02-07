@@ -28,6 +28,7 @@ class MapApp(QMainWindow):
         # self.image.resize(450, 450)
         self.search_btn.setIcon(QIcon('images/image.png'))
         self.search_btn.clicked.connect(self.search)
+        self.show_index.stateChanged.connect(self.print_address)
         # кнопки смены режима карты
         self.scheme.clicked.connect(self.make_map)
         self.satellite.clicked.connect(self.make_satellite)
@@ -47,6 +48,8 @@ class MapApp(QMainWindow):
                 self.setFocus()
         else:
             self.pt = False
+            self.address = ''
+            self.index = ''
             self.input_line.clear() # очистка поля ввода
             self.address_label.clear()
             self.update_map()  # отображаю карту без метки
@@ -64,11 +67,13 @@ class MapApp(QMainWindow):
         }
         response = requests.get(req_url, params=params)
         json_response = response.json()
+        print(json_response)
         toponym = json_response["response"]["GeoObjectCollection"] \
             ["featureMember"][0]["GeoObject"]
         toponym_coords = toponym["Point"]["pos"]
         self.address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
-        self.print_address(self.address)
+        self.index = toponym["metaDataProperty"]["GeocoderMetaData"]['Address']['postal_code']
+        self.print_address()
         return list(map(float, toponym_coords.split(" ")))
 
     # получение изображения карты
@@ -86,11 +91,13 @@ class MapApp(QMainWindow):
         self.pt = True
         if response.status_code == 200:
             return response.content
-        self.print_address(f'Ошибка: {response.status_code}')
 
     # отображает адрес
-    def print_address(self, ad):
-        self.address_label.setText(ad)
+    def print_address(self):
+        if self.show_index.isChecked():
+            self.address_label.setText(self.address + '\n' + self.index)
+        else:
+            self.address_label.setText(self.address)
         # выравнивание текста
         self.address_label.setWordWrap(True)
 
