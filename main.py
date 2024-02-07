@@ -20,10 +20,12 @@ class MapApp(QMainWindow):
         self.is_search = True
         uic.loadUi("main.ui", self)
         self.setWindowTitle("Yandex Map")
+        self.image.mousePressEvent = self.click_on_map
         self.initUI()
 
     # присоединяем кнопки к функциям
     def initUI(self):
+        # self.image.resize(450, 450)
         self.search_btn.setIcon(QIcon('images/image.png'))
         self.search_btn.clicked.connect(self.search)
         # кнопки смены режима карты
@@ -115,6 +117,14 @@ class MapApp(QMainWindow):
         self.update_map()
         self.setFocus()
 
+    def click_on_map(self, event):
+        pos = event.pos()
+        lon, lat = self.find_new_lonlat(pos.x(), pos.y())
+        # обновляем координаты метки
+        self.point = (str(lon), str(lat), 'pm2rdm')
+        self.update_map()
+        print(self.search_toponym(lon, lat))
+
     # следит за нажатыми кнопками, нажата стрелка вверх - карта двинется наверх и тд
     def keyPressEvent(self, event):
         print(event.key())
@@ -146,6 +156,13 @@ class MapApp(QMainWindow):
             if self.delta < 50:
                 self.delta *= 2.4
         self.update_map()
+
+    def find_new_lonlat(self, x, y):
+        center_x = 325
+        center_y = 225
+        lon = self.lon + (x - center_x) * (self.delta * 2 / 450)
+        lat = self.lat - (y - center_y) * (self.delta * 2 / 650)
+        return lon, lat
 
 
 if __name__ == "__main__":
