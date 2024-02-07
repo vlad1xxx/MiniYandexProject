@@ -47,7 +47,8 @@ class MapApp(QMainWindow):
                 self.setFocus()
         else:
             self.pt = False
-            self.input_line.clear()  # очистка поля ввода
+            self.input_line.clear() # очистка поля ввода
+            self.address_label.clear()
             self.update_map()  # отображаю карту без метки
             self.is_search = True
             self.search_btn.setIcon(QIcon('images/image.png'))
@@ -85,7 +86,7 @@ class MapApp(QMainWindow):
         self.pt = True
         if response.status_code == 200:
             return response.content
-        print(f'Ошибка {response.status_code}')
+        self.print_address(f'Ошибка: {response.status_code}')
 
     # отображает адрес
     def print_address(self, ad):
@@ -117,17 +118,26 @@ class MapApp(QMainWindow):
         self.update_map()
         self.setFocus()
 
+    def search_toponym(self, lon, lat):
+        params = {
+            "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+            "geocode": ','.join((str(lon), str(lat))),
+            "format": "json"
+        }
+        response = requests.get(f'https://geocode-maps.yandex.ru/1.x/', params=params)
+        json_response = response.json()
+        address = json_response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty']['GeocoderMetaData']['Address']['formatted']
+        self.print_address(address)
+
     def click_on_map(self, event):
         pos = event.pos()
         lon, lat = self.find_new_lonlat(pos.x(), pos.y())
         # обновляем координаты метки
         self.point = (str(lon), str(lat), 'pm2rdm')
         self.update_map()
-        print(self.search_toponym(lon, lat))
 
     # следит за нажатыми кнопками, нажата стрелка вверх - карта двинется наверх и тд
     def keyPressEvent(self, event):
-        print(event.key())
         if event.key() == Qt.Key_Left:
             if self.lon - self.delta < -179:
                 self.lon = -179
