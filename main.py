@@ -50,6 +50,7 @@ class MapApp(QMainWindow):
             self.pt = False
             self.address = ''
             self.index = ''
+            self.point = tuple()
             self.input_line.clear() # очистка поля ввода
             self.address_label.clear()
             self.update_map()  # отображаю карту без метки
