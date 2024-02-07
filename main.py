@@ -134,15 +134,16 @@ class MapApp(QMainWindow):
         }
         response = requests.get(f'https://geocode-maps.yandex.ru/1.x/', params=params)
         json_response = response.json()
-        address = json_response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty']['GeocoderMetaData']['Address']['formatted']
-        self.print_address(address)
+        self.address = json_response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty']['GeocoderMetaData']['Address']['formatted']
+        self.print_address()
 
     def click_on_map(self, event):
-        pos = event.pos()
-        lon, lat = self.find_new_lonlat(pos.x(), pos.y())
-        # обновляем координаты метки
-        self.point = (str(lon), str(lat), 'pm2rdm')
-        self.update_map()
+        if event.key() == Qt.LeftButton():
+            pos = event.pos()
+            lon, lat = self.find_new_lonlat(pos.x(), pos.y())
+            # обновляем координаты метки
+            self.point = (str(lon), str(lat), 'pm2rdm')
+            self.update_map()
 
     # следит за нажатыми кнопками, нажата стрелка вверх - карта двинется наверх и тд
     def keyPressEvent(self, event):
